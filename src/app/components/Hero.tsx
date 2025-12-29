@@ -1,3 +1,5 @@
+import Image from "next/image";
+import img from "../images/d-removebg-preview.png"
 import React from 'react';
 import { ArrowUpRight, Github, Linkedin, BrainCircuit, Activity, Bot, Cpu } from 'lucide-react';
 
@@ -84,8 +86,8 @@ const Hero: React.FC = () => {
           {/* Right Column: Hero Image with Floating UI */}
           <div className="lg:w-2/5 relative">
             <div className="relative z-10 aspect-[4/5] bg-zinc-100 dark:bg-zinc-900 overflow-hidden border-[12px] border-white dark:border-zinc-800 shadow-2xl md:rotate-2 hover:rotate-0 transition-all duration-1000 group rounded-[3rem]">
-              <img 
-                src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1974&auto=format&fit=crop" 
+              <Image 
+                src={img} 
                 alt="Muhammad Layan" 
                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110"
               />
