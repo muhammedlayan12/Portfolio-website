@@ -1,19 +1,30 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export default function AdminLogin() {
   const [pin, setPin] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
+    setLoading(true);
     const res = await fetch('/api/admin/login', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pin }),
     });
-    if (res.ok) router.push('/admin/dashboard');
-    else alert("Access Denied");
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem("adminToken", data.token); // SAVE THE TOKEN
+      router.push('/admin/dashboard');
+    } else {
+      alert(data.error || "Access Denied");
+    }
+    setLoading(false);
   };
 
   return (
@@ -25,22 +36,23 @@ export default function AdminLogin() {
           </div>
         </div>
         <h1 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">Security Override</h1>
-        <p className="text-zinc-500 text-xs uppercase tracking-[0.2em] mb-8">Enter Admin PIN to Access Core</p>
+        <p className="text-zinc-500 text-xs uppercase tracking-[0.2em] mb-8">Enter Admin PIN</p>
         
         <input 
           type="password"
           maxLength={4}
           value={pin}
           onChange={(e) => setPin(e.target.value)}
-          className="w-full bg-black border border-zinc-800 p-4 rounded-xl text-center text-3xl tracking-[1em] text-white focus:border-red-600 outline-none transition-all"
+          className="w-full bg-black border border-zinc-800 p-4 rounded-xl text-center text-3xl tracking-[1em] text-white focus:border-red-600 outline-none"
           placeholder="****"
         />
 
         <button 
           onClick={handleLogin}
-          className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl uppercase tracking-widest transition-all"
+          disabled={loading}
+          className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl uppercase tracking-widest transition-all disabled:opacity-50"
         >
-          Verify Identity
+          {loading ? "Verifying..." : "Verify Identity"}
         </button>
       </div>
     </div>

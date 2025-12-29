@@ -7,27 +7,39 @@ import { NextResponse } from 'next/server';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function POST(req: Request) {
-  await connectDB();
-
-  const { oldPin, newPin, token } = await req.json();
-  if (!oldPin || !newPin || !token) return NextResponse.json({ error: 'All fields required' }, { status: 400 });
-
   try {
-    // Verify JWT
-    jwt.verify(token, JWT_SECRET);
+    await connectDB();
+    const { oldPin, newPin } = await req.json();
+    
+    const authHeader = req.headers.get('authorization');
+    const token = authHeader?.split(' ')[1];
+
+    console.log("Token received:", token ? "Yes" : "No");
+
+    if (!token) return NextResponse.json({ error: 'No token' }, { status: 401 });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    console.log("Token verified for ID:", (decoded as any).id);
 
     const admin = await Admin.findOne({ role: 'super-admin' });
-    if (!admin) return NextResponse.json({ error: 'Admin not found' }, { status: 404 });
+    if (!admin) {
+      console.log("Admin not found in DB");
+      return NextResponse.json({ error: 'Admin not found' }, { status: 404 });
+    }
 
     const isMatch = await bcrypt.compare(oldPin, admin.pin);
+    console.log("Old PIN match:", isMatch);
+
     if (!isMatch) return NextResponse.json({ error: 'Old PIN is wrong' }, { status: 401 });
 
-    // Hash and save new PIN
-    admin.pin = await bcrypt.hash(newPin, 10);
+    const salt = await bcrypt.genSalt(10);
+    admin.pin = await bcrypt.hash(newPin, salt);
     await admin.save();
 
+    console.log("PIN updated successfully in DB");
     return NextResponse.json({ success: true });
   } catch (err) {
-    return NextResponse.json({ error: 'Invalid token or server error' }, { status: 401 });
+    console.log("Error in API:", err);
+    return NextResponse.json({ error: 'Server Error' }, { status: 500 });
   }
 }

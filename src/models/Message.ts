@@ -1,11 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
-const MessageSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  message: String,
-  status: { type: String, default: 'unread' }, // unread or read
+const MessageSchema = new Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  message: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
-export const Message = mongoose.models.Message || mongoose.model('Message', MessageSchema);
+export const Message = models.Message || model('Message', MessageSchema);

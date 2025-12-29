@@ -1,7 +1,8 @@
 // lib/mongodb.ts
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+// Add "as string" here to fix the Type Error
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
@@ -15,14 +16,18 @@ if (!cached) {
 
 async function connectDB() {
   if (cached.conn) {
-    console.log('✅ MongoDB already connected');
+    // console.log('✅ MongoDB already connected');
     return cached.conn;
   }
 
   if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
     console.log('⏳ Connecting to MongoDB...');
     cached.promise = mongoose
-      .connect(MONGODB_URI)
+      .connect(MONGODB_URI, opts) // TypeScript is now happy because MONGODB_URI is strictly a string
       .then((mongoose) => {
         console.log('✅ MongoDB connected successfully');
         return mongoose;
@@ -33,7 +38,13 @@ async function connectDB() {
       });
   }
 
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
   return cached.conn;
 }
 

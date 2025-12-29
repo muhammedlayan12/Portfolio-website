@@ -1,7 +1,35 @@
-import React from 'react';
-import { ArrowRight, Mail, Phone, MapPin, Send } from 'lucide-react';
+"use client";
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
 
 const Contact: React.FC = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        alert("Transmission Received. I'll get back to you soon.");
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        alert("Connection failed. Try again.");
+      }
+    } catch (err) {
+      alert("Server error.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ 
   return (
     <section id="contact" className="py-24 md:py-32 relative overflow-hidden bg-white dark:bg-zinc-950 transition-colors duration-500">
       
@@ -58,29 +86,31 @@ const Contact: React.FC = () => {
               ))}
             </div>
           </div>
-
-          {/* RIGHT SIDE: The Form Panel */}
+ {/* RIGHT SIDE: The Form Panel */}
           <div className="relative">
-            {/* Form Decorative Border Glow */}
-            <div className="absolute -inset-1 bg-gradient-to-tr from-red-600/20 to-transparent blur-lg rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition duration-1000"></div>
-            
             <div className="relative bg-white/50 dark:bg-zinc-900/50 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 border border-zinc-200 dark:border-zinc-800 shadow-2xl">
-              <form className="space-y-10">
+              <form onSubmit={handleSubmit} className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="relative group">
                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2 block">Identity</label>
                     <input 
+                      required
                       type="text" 
                       placeholder="YOUR NAME"
-                      className="w-full bg-transparent border-b border-zinc-200 dark:border-zinc-800 py-3 font-bold text-lg outline-none focus:border-red-600 dark:focus:border-red-500 transition-colors placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full bg-transparent border-b border-zinc-200 dark:border-zinc-800 py-3 font-bold text-lg outline-none focus:border-red-600 transition-colors"
                     />
                   </div>
                   <div className="relative group">
                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2 block">Email Channel</label>
                     <input 
+                      required
                       type="email" 
                       placeholder="HELLO@WEBSITE.COM"
-                      className="w-full bg-transparent border-b border-zinc-200 dark:border-zinc-800 py-3 font-bold text-lg outline-none focus:border-red-600 dark:focus:border-red-500 transition-colors placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="w-full bg-transparent border-b border-zinc-200 dark:border-zinc-800 py-3 font-bold text-lg outline-none focus:border-red-600 transition-colors"
                     />
                   </div>
                 </div>
@@ -88,26 +118,29 @@ const Contact: React.FC = () => {
                 <div className="relative group">
                   <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2 block">Vision Brief</label>
                   <textarea 
+                    required
                     rows={4} 
                     placeholder="DESCRIBE THE SYSTEM REQUIREMENTS..."
-                    className="w-full bg-transparent border-b border-zinc-200 dark:border-zinc-800 py-3 font-bold text-lg outline-none focus:border-red-600 dark:focus:border-red-500 transition-colors placeholder:text-zinc-300 dark:placeholder:text-zinc-700 resize-none"
+                    value={formData.message}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                    className="w-full bg-transparent border-b border-zinc-200 dark:border-zinc-800 py-3 font-bold text-lg outline-none focus:border-red-600 transition-colors resize-none"
                   />
                 </div>
 
-                <button className="group relative w-full overflow-hidden bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:bg-red-600 dark:hover:bg-red-600 hover:text-white dark:hover:text-white transition-all duration-500 active:scale-[0.98]">
-                  <span className="relative z-10">Initialize Inquiry</span>
-                  <Send size={16} className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  
-                  {/* Button Background Sweep */}
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="group relative w-full overflow-hidden bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 py-6 rounded-2xl font-black text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-3 hover:bg-red-600 transition-all active:scale-[0.98] disabled:opacity-50"
+                >
+                  <span className="relative z-10">{loading ? "SENDING..." : "Initialize Inquiry"}</span>
+                  {loading ? (
+                    <Loader2 size={16} className="animate-spin relative z-10" />
+                  ) : (
+                    <Send size={16} className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  )}
                   <div className="absolute inset-0 bg-red-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
                 </button>
               </form>
-              
-              <div className="mt-8 flex justify-center gap-8 opacity-40">
-                <span className="text-[8px] font-black uppercase tracking-widest">Secure Transmission</span>
-                <span className="text-[8px] font-black uppercase tracking-widest text-red-600">•</span>
-                <span className="text-[8px] font-black uppercase tracking-widest">AI Encrypted</span>
-              </div>
             </div>
           </div>
 
