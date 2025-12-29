@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth theme transitions when toggling */
+.theme-transition,
+.theme-transition * {
+  transition-property: background-color, color, border-color, box-shadow;
+  transition-duration: 400ms;
+  transition-timing-function: ease;
+}
+
+/* Ensure default background transition on body */
+body { transition: background-color 400ms ease; }
+
+
+
+
+
+
+
+
+
+/* 
+@layer utilities {
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+  
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .animate-bounce-slow {
+    animation: bounce-slow 4s ease-in-out infinite;
+  }
+  
+  .stroke-text {
+    -webkit-text-stroke: 1.5px #0f172a;
+  }
+  .dark .stroke-text {
+    -webkit-text-stroke: 1.5px #ffffff;
+  }
+} */
+
+
+
+
+
+
+
+
+
+@layer utilities {
+  .stroke-text {
+    /* Bold outline for Light Mode */
+    -webkit-text-stroke: 1.5px #18181b; /* zinc-900 */
+  }
+
+  .dark .stroke-text {
+    /* White outline for Dark Mode */
+    -webkit-text-stroke: 1.5px #ffffff;
+  }
+}
+
+/* Optional: Smooth entry for the blueprint grid */
+#contact {
+  animation: gridEntrance 1s ease-out;
+}
+
+@keyframes gridEntrance {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+
+
+
+
+
+
+
+
+
+
+@layer utilities {
+  /* Dynamic Adaptive Outline */
+  .stroke-text {
+    -webkit-text-stroke: 1.5px #18181b; /* zinc-900 (Light) */
+  }
+
+  .dark .stroke-text {
+    -webkit-text-stroke: 1.5px #ffffff; /* white (Dark) */
+  }
+
+  /* Slow bounce for the AI card */
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .animate-bounce-slow {
+    animation: bounce-slow 4s ease-in-out infinite;
+  }
+}
+
+
+@layer utilities {
+  /* Vertical text on the right side */
+  .vertical-text {
+    writing-mode: vertical-rl;
+  }
+
+  /* Adaptive Outline Text (Matches Hero) */
+  .stroke-text {
+    -webkit-text-stroke: 1.5px #18181b; /* zinc-900 for Light Mode */
+  }
+
+  .dark .stroke-text {
+    -webkit-text-stroke: 1.5px #ffffff; /* White for Dark Mode */
+  }
+}
